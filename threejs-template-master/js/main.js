@@ -22,7 +22,7 @@ import { SimplexNoise } from './lib/SimplexNoise.js';
 async function main() {
 
     const scene = new Scene();
-
+//hei
     const axesHelper = new AxesHelper(15);
     scene.add(axesHelper);
 
