@@ -8,7 +8,7 @@ import {
     RepeatWrapping,
     DirectionalLight,
     Vector3,
-    AxesHelper,
+    AxesHelper, CubeTextureLoader, PlaneGeometry, MeshBasicMaterial,
 } from './lib/three.module.js';
 
 import Utilities from './lib/Utilities.js';
@@ -18,15 +18,28 @@ import TextureSplattingMaterial from './materials/TextureSplattingMaterial.js';
 import TerrainBufferGeometry from './terrain/TerrainBufferGeometry.js';
 import { GLTFLoader } from './loaders/GLTFLoader.js';
 import { SimplexNoise } from './lib/SimplexNoise.js';
+import {Water} from "./Objects/water/water2.js";
 
 async function main() {
 
+    //const scene = new Scene();
     const scene = new Scene();
-//hei
+    {
+        const loader = new CubeTextureLoader();
+        scene.background = loader.load([
+            'resources/skybox/Daylight Box_Right.bmp',
+            'resources/skybox/Daylight Box_Left.bmp',
+            'resources/skybox/Daylight Box_Top.bmp',
+            'resources/skybox/Daylight Box_Bottom.bmp',
+            'resources/skybox/Daylight Box_Front.bmp',
+            'resources/skybox/Daylight Box_Back.bmp'
+        ]);
+    }
+
     const axesHelper = new AxesHelper(15);
     scene.add(axesHelper);
 
-    const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 
     const renderer = new WebGLRenderer({ antialias: true });
     renderer.setClearColor(0xffffff);
@@ -73,20 +86,20 @@ async function main() {
     directionalLight.target.position.set(0, 15, 0);
     scene.add(directionalLight.target);
 
-    camera.position.z = 70;
-    camera.position.y = 55;
+    camera.position.z = 60;
+    camera.position.y = 20;
     camera.rotation.x -= Math.PI * 0.25;
 
 
     /**
      * Add terrain:
-     * 
+     *
      * We have to wait for the image file to be loaded by the browser.
      * There are many ways to handle asynchronous flow in your application.
      * We are using the async/await language constructs of Javascript:
      *  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
      */
-    const heightmapImage = await Utilities.loadImage('resources/images/heightmap.png');
+    const heightmapImage = await Utilities.loadImage('resources/images/vesuvioheightmap2.jpg');
     const width = 100;
 
     const simplex = new SimplexNoise();
@@ -95,7 +108,7 @@ async function main() {
         heightmapImage,
         // noiseFn: simplex.noise.bind(simplex),
         numberOfSubdivisions: 128,
-        height: 20
+        height: 30
     });
 
     const grassTexture = new TextureLoader().load('resources/textures/grass_02.png');
@@ -123,13 +136,43 @@ async function main() {
     terrain.castShadow = true;
     terrain.receiveShadow = true;
 
+    terrain.position.y = 0;
+
     scene.add(terrain);
+
+
+// Water
+    const waterGeometry = new PlaneGeometry( 10000, 10000 );
+
+
+    let water = new Water(
+        waterGeometry,
+        {
+            textureWidth: 512,
+            textureHeight: 512,
+            waterNormals: new TextureLoader().load( 'resources/images/waternormals.jpg', function ( texture ) {
+
+                texture.wrapS = texture.wrapT = RepeatWrapping;
+
+            } ),
+            sunDirection: new Vector3(),
+            sunColor: 0xffffff,
+            waterColor: 0x001e0f,
+            distortionScale: 3.7,
+            fog: scene.fog !== undefined
+        }
+    );
+
+    water.position.y = 0;
+    water.rotation.x = - Math.PI / 2;
+
+    scene.add( water );
 
     /**
      * Add trees
      */
 
-    // instantiate a GLTFLoader:
+        // instantiate a GLTFLoader:
     const loader = new GLTFLoader();
 
     loader.load(
@@ -139,7 +182,7 @@ async function main() {
         (object) => {
             for (let x = -50; x < 50; x += 8) {
                 for (let z = -50; z < 50; z += 8) {
-                    
+
                     const px = x + 1 + (6 * Math.random()) - 3;
                     const pz = z + 1 + (6 * Math.random()) - 3;
 
@@ -154,7 +197,7 @@ async function main() {
                                 child.receiveShadow = true;
                             }
                         });
-                        
+
                         tree.position.x = px;
                         tree.position.y = height - 0.01;
                         tree.position.z = pz;
@@ -285,12 +328,18 @@ async function main() {
         velocity.applyQuaternion(camera.quaternion);
         camera.position.add(velocity);
 
+
+        const time = performance.now() * 0.001;
+
+        water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+
+
         // render scene:
         renderer.render(scene, camera);
 
         requestAnimationFrame(loop);
 
-    };
+    }
 
     loop(performance.now());
 
