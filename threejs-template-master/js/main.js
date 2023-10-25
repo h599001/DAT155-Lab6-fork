@@ -94,6 +94,24 @@ async function main() {
      * add 3D model fjell
      */
 
+    // instantiate a GLTFLoader:
+    const loader = new GLTFLoader();
+
+    loader.load( 'resources/assets/mount.glb', function ( gltf ) {
+
+        const mount = gltf.scene;
+        mount.scale.set(1, 1, 1); // Set the scale as needed
+        mount.position.set(0, 1, 0); // Set the position
+        scene.add(mount);
+
+        scene.add( mount );
+
+    }, undefined, function ( error ) {
+
+        console.error( error );
+
+    } );
+
 
 // Water
     const waterGeometry = new PlaneGeometry( 10000, 10000 );
@@ -126,10 +144,7 @@ async function main() {
      * Add trees
      */
 
-        // instantiate a GLTFLoader:
-    const loader = new GLTFLoader();
-
-    loader.load(
+    /*loader.load(
         // resource URL
         'resources/models/kenney_nature_kit/tree_thin.glb',
         // called when resource is loaded
@@ -158,7 +173,7 @@ async function main() {
 
                         tree.rotation.y = Math.random() * (2 * Math.PI);
 
-                        tree.scale.multiplyScalar(1.5 + Math.random() /*Math.random() * 1*/);
+                        tree.scale.multiplyScalar(1.5 + Math.random() * 1);
 
                         scene.add(tree);
                     }
@@ -172,7 +187,7 @@ async function main() {
         (error) => {
             console.error('Error loading model.', error);
         }
-    );
+    );*/
 
     /**
      * Set up camera controller:
