@@ -95,8 +95,6 @@ async function main() {
      */
 
 
-
-
 // Water
     const waterGeometry = new PlaneGeometry( 10000, 10000 );
 
