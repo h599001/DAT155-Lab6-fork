@@ -8,7 +8,8 @@ import {
     RepeatWrapping,
     DirectionalLight,
     Vector3,
-    AxesHelper, CubeTextureLoader, PlaneGeometry, //MeshBasicMaterial,
+    sRGBEncoding, // Import sRGBEncoding
+    AxesHelper, CubeTextureLoader, PlaneGeometry,//MeshBasicMaterial,
 } from './lib/three.module.js';
 
 //import Utilities from './lib/Utilities.js';
@@ -42,6 +43,10 @@ async function main() {
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 
     const renderer = new WebGLRenderer({ antialias: true });
+
+    // Enable sRGB rendering
+    renderer.outputEncoding = sRGBEncoding;
+
     renderer.setClearColor(0xffffff);
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -86,8 +91,8 @@ async function main() {
     directionalLight.target.position.set(0, 15, 0);
     scene.add(directionalLight.target);
 
-    camera.position.z = 60;
-    camera.position.y = 20;
+    camera.position.z = 100;
+    camera.position.y = 40;
     camera.rotation.x -= Math.PI * 0.25;
 
     /**
@@ -100,11 +105,9 @@ async function main() {
     loader.load( 'resources/assets/mount.glb', function ( gltf ) {
 
         const mount = gltf.scene;
-        mount.scale.set(1, 1, 1); // Set the scale as needed
-        mount.position.set(0, 1, 0); // Set the position
+        mount.scale.set(0.01, 0.01, 0.01); // Set the scale as needed
+        mount.position.set(0, 0, 0); // Set the position
         scene.add(mount);
-
-        scene.add( mount );
 
     }, undefined, function ( error ) {
 
@@ -135,7 +138,7 @@ async function main() {
         }
     );
 
-    water.position.y = 0;
+    water.position.y = 10;
     water.rotation.x = - Math.PI / 2;
 
     scene.add( water );
