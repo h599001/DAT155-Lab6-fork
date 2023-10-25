@@ -3,21 +3,21 @@ import {
     WebGLRenderer,
     PCFSoftShadowMap,
     Scene,
-    Mesh,
+    //Mesh,
     TextureLoader,
     RepeatWrapping,
     DirectionalLight,
     Vector3,
-    AxesHelper, CubeTextureLoader, PlaneGeometry, MeshBasicMaterial,
+    AxesHelper, CubeTextureLoader, PlaneGeometry, //MeshBasicMaterial,
 } from './lib/three.module.js';
 
-import Utilities from './lib/Utilities.js';
+//import Utilities from './lib/Utilities.js';
 import MouseLookController from './controls/MouseLookController.js';
 
-import TextureSplattingMaterial from './materials/TextureSplattingMaterial.js';
-import TerrainBufferGeometry from './terrain/TerrainBufferGeometry.js';
+//import TextureSplattingMaterial from './materials/TextureSplattingMaterial.js';
+//import TerrainBufferGeometry from './terrain/TerrainBufferGeometry.js';
 import { GLTFLoader } from './loaders/GLTFLoader.js';
-import { SimplexNoise } from './lib/SimplexNoise.js';
+//import { SimplexNoise } from './lib/SimplexNoise.js';
 import {Water} from "./Objects/water/water2.js";
 
 async function main() {
@@ -96,6 +96,7 @@ async function main() {
 
 
 
+
 // Water
     const waterGeometry = new PlaneGeometry( 10000, 10000 );
 
@@ -159,7 +160,7 @@ async function main() {
 
                         tree.rotation.y = Math.random() * (2 * Math.PI);
 
-                        tree.scale.multiplyScalar(1.5 + Math.random() * 1);
+                        tree.scale.multiplyScalar(1.5 + Math.random() /*Math.random() * 1*/);
 
                         scene.add(tree);
                     }
@@ -284,7 +285,7 @@ async function main() {
         camera.position.add(velocity);
 
 
-        const time = performance.now() * 0.001;
+        //const time = performance.now() * 0.001;
 
         water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
 
