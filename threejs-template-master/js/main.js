@@ -9,7 +9,11 @@ import {
     DirectionalLight,
     Vector3,
     sRGBEncoding, // Import sRGBEncoding
-    AxesHelper, CubeTextureLoader, PlaneGeometry,//MeshBasicMaterial,
+    //Points,
+    //BufferGeometry,
+    //BufferAttribute,
+    //PointsMaterial,
+    AxesHelper, CubeTextureLoader, PlaneGeometry, //MeshBasicMaterial,
 } from './lib/three.module.js';
 
 //import Utilities from './lib/Utilities.js';
@@ -20,6 +24,7 @@ import MouseLookController from './controls/MouseLookController.js';
 import { GLTFLoader } from './loaders/GLTFLoader.js';
 //import { SimplexNoise } from './lib/SimplexNoise.js';
 import {Water} from "./Objects/water/water2.js";
+import {ParticleEngine, Type, Tween} from '/lib/ParticleEngine.js';
 
 async function main() {
 
@@ -114,6 +119,88 @@ async function main() {
         console.error( error );
 
     } );
+
+    // Create a fountain or particle system
+    const fountainSettings = {
+        positionStyle: Type.CUBE,
+        positionBase: new Vector3(0, 5, 0),
+        positionSpread: new Vector3(10, 0, 10),
+        velocityStyle: Type.CUBE,
+        velocityBase: new Vector3(0, 160, 0),
+        velocitySpread: new Vector3(100, 20, 100),
+        accelerationBase: new Vector3(0, -100, 0),
+        particleTexture: new TextureLoader().load('resources/textures/lavatile.jpg'),
+        angleBase: 0,
+        angleSpread: 180,
+        angleVelocityBase: 0,
+        angleVelocitySpread: 360 * 4,
+        sizeTween: new Tween([0, 1], [1, 20]),
+        opacityTween: new Tween([2, 3], [1, 0]),
+        colorTween: new Tween([0.5, 2], [
+            new Vector3(0, 1, 0.5),
+            new Vector3(0.8, 1, 0.5)
+        ]),
+        particlesPerSecond: 200,
+        particleDeathAge: 3.0,
+        emitterDeathAge: 60
+    };
+
+    // Create the particle system
+    const fountain = new ParticleEngine();
+    fountain.setValues(fountainSettings);
+    fountain.initialize();
+    fountain.particleSystem.position.set(0, 5, 0); // Set the position of the particle system
+
+    scene.add(fountain.particleSystem); // Add the particle system to the scene
+
+    // Create a smoke particle system
+    const smokeSettings = {
+        positionStyle: Type.CUBE,
+        positionBase: new Vector3(0, 0, 0),
+        positionSpread: new Vector3(10, 0, 10),
+        velocityStyle: Type.CUBE,
+        velocityBase: new Vector3(0, 150, 0),
+        velocitySpread: new Vector3(80, 50, 80),
+        accelerationBase: new Vector3(0, -10, 0),
+        particleTexture: new TextureLoader().load('resources/images/smokeparticle.png'),
+        angleBase: 0,
+        angleSpread: 720,
+        angleVelocityBase: 0,
+        angleVelocitySpread: 720,
+        sizeTween: new Tween([0, 1], [32, 128]),
+        opacityTween: new Tween([0.8, 2], [0.5, 0]),
+        colorTween: new Tween([0.4, 1], [
+            new Vector3(0, 0, 0.2),
+            new Vector3(0, 0, 0.5)
+        ]),
+        particlesPerSecond: 200,
+        particleDeathAge: 2.0,
+        emitterDeathAge: 60
+    };
+
+    // Create the smoke particle system
+    const smoke = new ParticleEngine();
+    //smoke.particleSystem = undefined;
+    smoke.setValues(smokeSettings);
+    smoke.initialize();
+    smoke.particleSystem.position.set(0, 0, 0); // Set the position of the particle system
+
+    scene.add(smoke.particleSystem); // Add the particle system to the scene
+
+
+    // Opprett en enkel geometri (vulkan)
+    /*const volcanoGeometry = new TConeGeometry(0.5, 1, 8); // Juster størrelsen etter behov
+    const volcanoMaterial = new MeshBasicMaterial({ color: 0xFF0000 }); // Rød farge for vulkanen
+    const volcano = new Mesh(volcanoGeometry, volcanoMaterial);
+    volcano.position.set(0, 2, 0); //Plasser vulkanen som ønsker
+    scene.add(volcano);
+
+    // Legg til lyskilder for å belyse scenen
+    const light = new PointLight(0xFFFFFF);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+
+     */
 
 
 // Water
