@@ -24,7 +24,7 @@ import MouseLookController from './controls/MouseLookController.js';
 import { GLTFLoader } from './loaders/GLTFLoader.js';
 //import { SimplexNoise } from './lib/SimplexNoise.js';
 import {Water} from "./Objects/water/water2.js";
-import {ParticleEngine, Type, Tween} from '/lib/ParticleEngine.js';
+import {ParticleEngine, Type, Tween} from '/objects/particle/ParticleEngine.js';
 
 async function main() {
 
