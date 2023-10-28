@@ -72,13 +72,13 @@ function Tween(timeArray, valueArray)
 
 Tween.prototype.lerp = function(t)
 {
-	var i = 0;
-	var n = this.times.length;
+	let i = 0;
+	const n = this.times.length;
 	while (i < n && t > this.times[i])  
 		i++;
 	if (i === 0) return this.values[0];
 	if (i === n)	return this.values[n-1];
-	var p = (t - this.times[i-1]) / (this.times[i] - this.times[i-1]);
+	const p = (t - this.times[i-1]) / (this.times[i] - this.times[i-1]);
 	if (this.values[0] instanceof THREE.Vector3)
 		return this.values[i-1].clone().lerp( this.values[i], p );
 	else // it's a float
@@ -129,7 +129,7 @@ Particle.prototype.update = function(dt)
 				
 	if ( this.colorTween.times.length > 0 )
 	{
-		var colorHSL = this.colorTween.lerp( this.age );
+		const colorHSL = this.colorTween.lerp( this.age );
 		this.color = new THREE.Color().setHSL( colorHSL.x, colorHSL.y, colorHSL.z );
 	}
 	
@@ -143,7 +143,7 @@ Particle.prototype.update = function(dt)
 // PARTICLE ENGINE CLASS //
 ///////////////////////////
 
-var Type = Object.freeze({ "CUBE":1, "SPHERE":2 });
+const Type = Object.freeze({ "CUBE":1, "SPHERE":2 });
 
 function ParticleEngine()
 {
@@ -246,7 +246,7 @@ ParticleEngine.prototype.setValues = function( parameters )
 	this.colorTween   = new Tween();
 	this.opacityTween = new Tween();
 	
-	for ( var key in parameters ) 
+	for ( const key in parameters )
 		this[ key ] = parameters[ key ];
 	
 	// attach tweens to particles
@@ -281,6 +281,7 @@ ParticleEngine.prototype.setValues = function( parameters )
 		blending: THREE.NormalBlending, depthTest: true
 	});
 	this.particleMesh = new THREE.ParticleSystem();
+	this.pa
 }
 	
 // helper functions for randomization
@@ -290,23 +291,23 @@ ParticleEngine.prototype.randomValue = function(base, spread)
 }
 ParticleEngine.prototype.randomVector3 = function(base, spread)
 {
-	var rand3 = new THREE.Vector3( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
+	const rand3 = new THREE.Vector3( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
 	return new THREE.Vector3().addVectors( base, new THREE.Vector3().multiplyVectors( spread, rand3 ) );
 }
 
 
 ParticleEngine.prototype.createParticle = function()
 {
-	var particle = new Particle();
+	const particle = new Particle();
 
 	if (this.positionStyle === Type.CUBE)
 		particle.position = this.randomVector3( this.positionBase, this.positionSpread ); 
 	if (this.positionStyle === Type.SPHERE)
 	{
-		var z = 2 * Math.random() - 1;
-		var t = 6.2832 * Math.random();
-		var r = Math.sqrt( 1 - z*z );
-		var vec3 = new THREE.Vector3( r * Math.cos(t), r * Math.sin(t), z );
+		const z = 2 * Math.random() - 1;
+		const t = 6.2832 * Math.random();
+		const r = Math.sqrt( 1 - z*z );
+		const vec3 = new THREE.Vector3( r * Math.cos(t), r * Math.sin(t), z );
 		particle.position = new THREE.Vector3().addVectors( this.positionBase, vec3.multiplyScalar( this.positionRadius ) );
 	}
 		
@@ -316,8 +317,8 @@ ParticleEngine.prototype.createParticle = function()
 	}
 	if ( this.velocityStyle === Type.SPHERE )
 	{
-		var direction = new THREE.Vector3().subVectors( particle.position, this.positionBase );
-		var speed     = this.randomValue( this.speedBase, this.speedSpread );
+		const direction = new THREE.Vector3().subVectors( particle.position, this.positionBase );
+		const speed     = this.randomValue( this.speedBase, this.speedSpread );
 		particle.velocity  = direction.normalize().multiplyScalar( speed );
 	}
 	
@@ -329,7 +330,7 @@ ParticleEngine.prototype.createParticle = function()
 
 	particle.size = this.randomValue( this.sizeBase, this.sizeSpread );
 
-	var color = this.randomVector3( this.colorBase, this.colorSpread );
+	const color = this.randomVector3( this.colorBase, this.colorSpread );
 	particle.color = new THREE.Color().setHSL( color.x, color.y, color.z );
 	
 	particle.opacity = this.randomValue( this.opacityBase, this.opacitySpread );
@@ -343,7 +344,7 @@ ParticleEngine.prototype.createParticle = function()
 ParticleEngine.prototype.initialize = function()
 {
 	// link particle data with geometry/material data
-	for (var i = 0; i < this.particleCount; i++)
+	for (let i = 0; i < this.particleCount; i++)
 	{
 		// remove duplicate code somehow, here and in update function below.
 		this.particleArray[i] = this.createParticle();
@@ -367,7 +368,7 @@ ParticleEngine.prototype.initialize = function()
 
 ParticleEngine.prototype.update = function(dt)
 {
-	var recycleIndices = [];
+	const recycleIndices = [];
 	
 	// update particle data
 	for (let i = 0; i < this.particleCount; i++)
@@ -399,8 +400,8 @@ ParticleEngine.prototype.update = function(dt)
 	if ( this.emitterAge < this.particleDeathAge )
 	{
 		// determine indices of particles to activate
-		var startIndex = Math.round( this.particlesPerSecond * (this.emitterAge) );
-		var   endIndex = Math.round( this.particlesPerSecond * (this.emitterAge + dt) );
+		const startIndex = Math.round( this.particlesPerSecond * (this.emitterAge) );
+		let endIndex = Math.round( this.particlesPerSecond * (this.emitterAge + dt) );
 		if  ( endIndex > this.particleCount ) 
 			  endIndex = this.particleCount; 
 			  
@@ -409,7 +410,7 @@ ParticleEngine.prototype.update = function(dt)
 	}
 
 	// if any particles have died while the emitter is still running, we imediately recycle them
-	for (var j = 0; j < recycleIndices.length; j++)
+	for (let j = 0; j < recycleIndices.length; j++)
 	{
 		const i = recycleIndices[j];
 		this.particleArray[i] = this.createParticle();
