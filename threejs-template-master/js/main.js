@@ -3,28 +3,22 @@ import {
     WebGLRenderer,
     PCFSoftShadowMap,
     Scene,
-    //Mesh,
+    Mesh,
     TextureLoader,
     RepeatWrapping,
     DirectionalLight,
     Vector3,
-    sRGBEncoding, // Import sRGBEncoding
-    //Points,
-    //BufferGeometry,
-    //BufferAttribute,
-    //PointsMaterial,
-    AxesHelper, CubeTextureLoader, PlaneGeometry, //MeshBasicMaterial,
+    AxesHelper, CubeTextureLoader, PlaneGeometry, MeshBasicMaterial,
 } from './lib/three.module.js';
 
-//import Utilities from './lib/Utilities.js';
+import Utilities from './lib/Utilities.js';
 import MouseLookController from './controls/MouseLookController.js';
 
-//import TextureSplattingMaterial from './materials/TextureSplattingMaterial.js';
-//import TerrainBufferGeometry from './terrain/TerrainBufferGeometry.js';
+import TextureSplattingMaterial from './materials/TextureSplattingMaterial.js';
+import TerrainBufferGeometry from './terrain/TerrainBufferGeometry.js';
 import { GLTFLoader } from './loaders/GLTFLoader.js';
-//import { SimplexNoise } from './lib/SimplexNoise.js';
+import { SimplexNoise } from './lib/SimplexNoise.js';
 import {Water} from "./Objects/water/water2.js";
-import {ParticleEngine, Type, Tween} from '/objects/particle/ParticleEngine.js';
 
 async function main() {
 
@@ -48,10 +42,6 @@ async function main() {
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 
     const renderer = new WebGLRenderer({ antialias: true });
-
-    // Enable sRGB rendering
-    renderer.outputEncoding = sRGBEncoding;
-
     renderer.setClearColor(0xffffff);
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -96,111 +86,59 @@ async function main() {
     directionalLight.target.position.set(0, 15, 0);
     scene.add(directionalLight.target);
 
-    camera.position.z = 100;
-    camera.position.y = 40;
+    camera.position.z = 60;
+    camera.position.y = 20;
     camera.rotation.x -= Math.PI * 0.25;
 
+
     /**
-     * add 3D model fjell
+     * Add terrain:
+     *
+     * We have to wait for the image file to be loaded by the browser.
+     * There are many ways to handle asynchronous flow in your application.
+     * We are using the async/await language constructs of Javascript:
+     *  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
      */
+    const heightmapImage = await Utilities.loadImage('resources/images/vesuvioheightmap2.jpg');
+    const width = 100;
 
-    // instantiate a GLTFLoader:
-    const loader = new GLTFLoader();
+    const simplex = new SimplexNoise();
+    const terrainGeometry = new TerrainBufferGeometry({
+        width,
+        heightmapImage,
+        // noiseFn: simplex.noise.bind(simplex),
+        numberOfSubdivisions: 128,
+        height: 30
+    });
 
-    loader.load( 'resources/assets/mount.glb', function ( gltf ) {
+    const grassTexture = new TextureLoader().load('resources/textures/grass_02.png');
+    grassTexture.wrapS = RepeatWrapping;
+    grassTexture.wrapT = RepeatWrapping;
+    grassTexture.repeat.set(5000 / width, 5000 / width);
 
-        const mount = gltf.scene;
-        mount.scale.set(0.01, 0.01, 0.01); // Set the scale as needed
-        mount.position.set(0, 0, 0); // Set the position
-        scene.add(mount);
-
-    }, undefined, function ( error ) {
-
-        console.error( error );
-
-    } );
-
-    // Create a fountain or particle system
-    const fountainSettings = {
-        positionStyle: Type.CUBE,
-        positionBase: new Vector3(0, 5, 0),
-        positionSpread: new Vector3(10, 0, 10),
-        velocityStyle: Type.CUBE,
-        velocityBase: new Vector3(0, 160, 0),
-        velocitySpread: new Vector3(100, 20, 100),
-        accelerationBase: new Vector3(0, -100, 0),
-        particleTexture: new TextureLoader().load('resources/textures/lavatile.jpg'),
-        angleBase: 0,
-        angleSpread: 180,
-        angleVelocityBase: 0,
-        angleVelocitySpread: 360 * 4,
-        sizeTween: new Tween([0, 1], [1, 20]),
-        opacityTween: new Tween([2, 3], [1, 0]),
-        colorTween: new Tween([0.5, 2], [
-            new Vector3(0, 1, 0.5),
-            new Vector3(0.8, 1, 0.5)
-        ]),
-        particlesPerSecond: 200,
-        particleDeathAge: 3.0,
-        emitterDeathAge: 60
-    };
-
-    // Create the particle system
-    const fountain = new ParticleEngine();
-    fountain.setValues(fountainSettings);
-    fountain.initialize();
-    fountain.particleSystem.position.set(0, 5, 0); // Set the position of the particle system
-
-    scene.add(fountain.particleSystem); // Add the particle system to the scene
-
-    // Create a smoke particle system
-    const smokeSettings = {
-        positionStyle: Type.CUBE,
-        positionBase: new Vector3(0, 0, 0),
-        positionSpread: new Vector3(10, 0, 10),
-        velocityStyle: Type.CUBE,
-        velocityBase: new Vector3(0, 150, 0),
-        velocitySpread: new Vector3(80, 50, 80),
-        accelerationBase: new Vector3(0, -10, 0),
-        particleTexture: new TextureLoader().load('resources/images/smokeparticle.png'),
-        angleBase: 0,
-        angleSpread: 720,
-        angleVelocityBase: 0,
-        angleVelocitySpread: 720,
-        sizeTween: new Tween([0, 1], [32, 128]),
-        opacityTween: new Tween([0.8, 2], [0.5, 0]),
-        colorTween: new Tween([0.4, 1], [
-            new Vector3(0, 0, 0.2),
-            new Vector3(0, 0, 0.5)
-        ]),
-        particlesPerSecond: 200,
-        particleDeathAge: 2.0,
-        emitterDeathAge: 60
-    };
-
-    // Create the smoke particle system
-    const smoke = new ParticleEngine();
-    //smoke.particleSystem = undefined;
-    smoke.setValues(smokeSettings);
-    smoke.initialize();
-    smoke.particleSystem.position.set(0, 0, 0); // Set the position of the particle system
-
-    scene.add(smoke.particleSystem); // Add the particle system to the scene
+    const snowyRockTexture = new TextureLoader().load('resources/textures/snowy_rock_01.png');
+    snowyRockTexture.wrapS = RepeatWrapping;
+    snowyRockTexture.wrapT = RepeatWrapping;
+    snowyRockTexture.repeat.set(1500 / width, 1500 / width);
 
 
-    // Opprett en enkel geometri (vulkan)
-    /*const volcanoGeometry = new TConeGeometry(0.5, 1, 8); // Juster størrelsen etter behov
-    const volcanoMaterial = new MeshBasicMaterial({ color: 0xFF0000 }); // Rød farge for vulkanen
-    const volcano = new Mesh(volcanoGeometry, volcanoMaterial);
-    volcano.position.set(0, 2, 0); //Plasser vulkanen som ønsker
-    scene.add(volcano);
+    const splatMap = new TextureLoader().load('resources/images/splatmap_01.png');
 
-    // Legg til lyskilder for å belyse scenen
-    const light = new PointLight(0xFFFFFF);
-    light.position.set(5, 5, 5);
-    scene.add(light);
+    const terrainMaterial = new TextureSplattingMaterial({
+        color: 0xffffff,
+        shininess: 0,
+        textures: [snowyRockTexture, grassTexture],
+        splatMaps: [splatMap]
+    });
 
-     */
+    const terrain = new Mesh(terrainGeometry, terrainMaterial);
+
+    terrain.castShadow = true;
+    terrain.receiveShadow = true;
+
+    terrain.position.y = 0;
+
+    scene.add(terrain);
 
 
 // Water
@@ -225,7 +163,7 @@ async function main() {
         }
     );
 
-    water.position.y = 10;
+    water.position.y = 0;
     water.rotation.x = - Math.PI / 2;
 
     scene.add( water );
@@ -234,7 +172,10 @@ async function main() {
      * Add trees
      */
 
-    /*loader.load(
+        // instantiate a GLTFLoader:
+    const loader = new GLTFLoader();
+
+    loader.load(
         // resource URL
         'resources/models/kenney_nature_kit/tree_thin.glb',
         // called when resource is loaded
@@ -277,7 +218,7 @@ async function main() {
         (error) => {
             console.error('Error loading model.', error);
         }
-    );*/
+    );
 
     /**
      * Set up camera controller:
@@ -388,7 +329,7 @@ async function main() {
         camera.position.add(velocity);
 
 
-        //const time = performance.now() * 0.001;
+        const time = performance.now() * 0.001;
 
         water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
 
