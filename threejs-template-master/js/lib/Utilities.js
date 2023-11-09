@@ -53,11 +53,27 @@ export default class Utilities {
 
         let imageData = context.getImageData(0, 0, size, size).data;
 
-        imageData.forEach((a, i) => {
-            if (i % 4 === 0) { // only extract the first component of (r,g,b,a).
-                data[Math.floor(i / 4)] = a / 255;
+        for (let i = 0; i < imageData.length; i += 4) {
+            data[i / 4] = imageData[i] / 255.0; // Assuming grayscale for simplicity
+        }
+
+        const smoothingFactor = 1;
+        // Apply smoothing filter
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                let sum = 0;
+                let count = 0;
+                for (let m = -smoothingFactor; m <= smoothingFactor; m++) {
+                    for (let n = -smoothingFactor; n <= smoothingFactor; n++) {
+                        if (i + m >= 0 && i + m < size && j + n >= 0 && j + n < size) {
+                            sum += data[(i + m) * size + (j + n)];
+                            count++;
+                        }
+                    }
+                }
+                data[i * size + j] = sum / count;
             }
-        });
+        }
 
         return data;
     }

@@ -22267,6 +22267,11 @@ function WebXRManager( renderer, gl ) {
 
 		camera.matrixWorld.copy( cameraVR.matrixWorld );
 
+
+        // Fix for WebXR camera matrix updating https://github.com/mrdoob/three.js/pull/19085/commits/628de1fb61a0f35a76d183239dde8f0524cb541f
+        camera.matrix.copy( cameraVR.matrix );
+        camera.matrix.decompose( camera.position, camera.quaternion, camera.scale );
+
 		const children = camera.children;
 
 		for ( let i = 0, l = children.length; i < l; i ++ ) {
