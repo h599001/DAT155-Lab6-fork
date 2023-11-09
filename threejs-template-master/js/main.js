@@ -19,7 +19,7 @@ import TextureSplattingMaterial from './materials/TextureSplattingMaterial.js';
 import TerrainBufferGeometry from './terrain/TerrainBufferGeometry.js';
 import { GLTFLoader } from './loaders/GLTFLoader.js';
 import { SimplexNoise } from './lib/SimplexNoise.js';
-import {Water} from "./Objects/water/water2.js";
+import {Water} from "./objects/water/water2.js";
 import {VRButton} from "./lib/VRButton.js";
 
 async function main() {
