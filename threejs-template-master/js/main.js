@@ -23,18 +23,20 @@ import {Water} from "./objects/water/water2.js";
 import {VRButton} from "./lib/VRButton.js";
 
 async function main() {
-
+    const loc = window.location.pathname;
+    const main_url = loc.substring(0, loc.lastIndexOf('/'))+ "/threejs-template-master/";
     //const scene = new Scene();
     const scene = new Scene();
     {
+        console.log(main_url);
         const loader = new CubeTextureLoader();
         scene.background = loader.load([
-            '/../resources/skybox/Daylight_Box_Right.bmp',
-            '/../resources/skybox/Daylight_Box_Left.bmp',
-            '/../resources/skybox/Daylight_Box_Top.bmp',
-            '/../resources/skybox/Daylight_Box_Bottom.bmp',
-            '/../resources/skybox/Daylight_Box_Front.bmp',
-            '/../resources/skybox/Daylight_Box_Back.bmp'
+            main_url + 'resources/skybox/Daylight_Box_Right.bmp',
+            main_url + 'resources/skybox/Daylight_Box_Left.bmp',
+            main_url + 'resources/skybox/Daylight_Box_Top.bmp',
+            main_url + 'resources/skybox/Daylight_Box_Bottom.bmp',
+            main_url + 'resources/skybox/Daylight_Box_Front.bmp',
+            main_url + 'resources/skybox/Daylight_Box_Back.bmp'
         ]);
     }
 
@@ -115,7 +117,8 @@ async function main() {
      * We are using the async/await language constructs of Javascript:
      *  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
      */
-    const heightmapImage = await Utilities.loadImage('resources/images/vulkanmodell3.png');
+
+    const heightmapImage = await Utilities.loadImage(main_url+'/resources/images/vulkanmodell3.png');
     const width = 124 * 3;
 
     const simplex = new SimplexNoise();
@@ -127,18 +130,18 @@ async function main() {
         height: 42 * 3
     });
 
-    const grassTexture = new TextureLoader().load('resources/textures/grass_02.png');
+    const grassTexture = new TextureLoader().load(main_url + 'resources/textures/grass_02.png');
     grassTexture.wrapS = RepeatWrapping;
     grassTexture.wrapT = RepeatWrapping;
     grassTexture.repeat.set(5000 / width, 5000 / width);
 
-    const snowyRockTexture = new TextureLoader().load('resources/textures/snowy_rock_01.png');
+    const snowyRockTexture = new TextureLoader().load(main_url + 'resources/textures/snowy_rock_01.png');
     snowyRockTexture.wrapS = RepeatWrapping;
     snowyRockTexture.wrapT = RepeatWrapping;
     snowyRockTexture.repeat.set(1500 / width, 1500 / width);
 
 
-    const splatMap = new TextureLoader().load('resources/images/vulkan-splatmap.jpg');
+    const splatMap = new TextureLoader().load(main_url +'resources/images/vulkan-splatmap.jpg');
 
     const terrainMaterial = new TextureSplattingMaterial({
         color: 0xffffff,
@@ -167,7 +170,7 @@ async function main() {
         {
             textureWidth: 512,
             textureHeight: 512,
-            waterNormals: new TextureLoader().load( 'resources/images/waternormals.jpg', function ( texture ) {
+            waterNormals: new TextureLoader().load( main_url+'resources/images/waternormals.jpg', function ( texture ) {
 
                 texture.wrapS = texture.wrapT = RepeatWrapping;
 
