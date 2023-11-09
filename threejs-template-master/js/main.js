@@ -29,12 +29,12 @@ async function main() {
     {
         const loader = new CubeTextureLoader();
         scene.background = loader.load([
-            'resources/skybox/Daylight_Box_Right.bmp',
-            'resources/skybox/Daylight_Box_Left.bmp',
-            'resources/skybox/Daylight_Box_Top.bmp',
-            'resources/skybox/Daylight_Box_Bottom.bmp',
-            'resources/skybox/Daylight_Box_Front.bmp',
-            'resources/skybox/Daylight_Box_Back.bmp'
+            '../resources/skybox/Daylight_Box_Right.bmp',
+            '../resources/skybox/Daylight_Box_Left.bmp',
+            '../resources/skybox/Daylight_Box_Top.bmp',
+            '../resources/skybox/Daylight_Box_Bottom.bmp',
+            '../resources/skybox/Daylight_Box_Front.bmp',
+            '../resources/skybox/Daylight_Box_Back.bmp'
         ]);
     }
 
